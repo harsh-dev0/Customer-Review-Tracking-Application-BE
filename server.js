@@ -11,6 +11,7 @@ const PORT = 3000;
 
 // Middleware
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public'))); // Serve static files from 'public' directory
 app.use((req, res, next) => {
     // Handle CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
