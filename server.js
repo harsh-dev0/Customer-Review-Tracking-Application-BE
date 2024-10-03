@@ -1,16 +1,20 @@
-require('dotenv').config();
+fetchrequire('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User.js');
 const Review = require('./models/Review.js');
+const path = require('path');
+const cors = require('cors');
+
 
 const app = express();
 const PORT = 3000;
 
 // Middleware
 app.use(express.json());
+app.use(cors());
 app.use(express.static(path.join(__dirname, 'public'))); // Serve static files from 'public' directory
 app.use((req, res, next) => {
     // Handle CORS
