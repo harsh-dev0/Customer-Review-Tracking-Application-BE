@@ -28,7 +28,7 @@
         body {
             font-family: Arial, sans-serif;
         }
-
+        
         #review-bubble {
             position: fixed;
             bottom: ${config.position.bottom};
@@ -76,6 +76,13 @@
             padding-bottom: 10px;
         }
 
+        /* Adjust review text color for better visibility */
+        #review-list div {
+            color: #000; /* Ensure review text is black for visibility */
+            margin-bottom: 5px; /* Space between reviews */
+            font-size: 14px; /* Consistent font size */
+        }
+
         input,
         textarea {
             width: 100%;
@@ -84,26 +91,30 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
+            background-color: #FFFFFF; /* Ensure background is white */
+            color: #000000; /* Make input text black */
         }
 
         button {
             width: 100%;
             padding: 10px;
-            background-color: ${config.bubbleColor};
+            background-color: ${config.bubbleColor} !important; /* Button color based on bubble color */
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s; /* Smooth transition for background color */
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #0056b3; /* Darker shade on hover */
         }
 
-        
-        .no-reviews {
-            color: ${config.popupTextColor}; /* Ensure visibility */
-            text-align: center;
+        #no-reviews-message {
+            font: 'bold';
+            margin-top: 10px;
+            color: ${config.popupTextColor}; /* Use black for better visibility */
+            text-align: center; /* Center the text */
         }
     `;
     document.head.appendChild(style);
@@ -118,6 +129,7 @@
     popup.id = 'review-popup';
     popup.innerHTML = `
         <h3>${config.reviewHeaderText}</h3>
+        <div id="no-reviews-message" style="display: none;">${config.noReviewsText}</div>
         <div id="review-list"></div>
         <form id="review-form" no-validate>
             <input type="text" id="name" placeholder="Your name" required>
@@ -125,7 +137,6 @@
             <textarea id="review" rows="4" placeholder="Write your review..." required></textarea>
             <button type="submit">${config.submitButtonText}</button>
         </form>
-        <p class="no-reviews" style="display: none;">${config.noReviewsText}</p>
     `;
     document.body.appendChild(popup);
 
@@ -152,15 +163,15 @@
     // Function to display fetched reviews
     function displayReviews(reviews) {
         const reviewList = document.getElementById('review-list');
-        reviewList.innerHTML = ''; // Clear previous reviews
-        const noReviewsMessage = document.querySelector('.no-reviews');
-        
+        const noReviewsMessage = document.getElementById('no-reviews-message');
+        reviewList.innerHTML = '';
+
         if (reviews.length === 0) {
-            noReviewsMessage.style.display = 'block'; // Show "No reviews available."
+            noReviewsMessage.style.display = 'block'; // Show the no reviews message
             return;
-        } else {
-            noReviewsMessage.style.display = 'none'; // Hide if reviews are available
         }
+
+        noReviewsMessage.style.display = 'none'; // Hide the message if there are reviews
 
         reviews.forEach(({ name, review }) => {
             const reviewElement = document.createElement('div');
@@ -178,17 +189,11 @@
     // Handle form submission
     const reviewForm = document.getElementById('review-form');
     reviewForm.onsubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Prevent form from refreshing the page
 
-        const name = document.getElementById('name').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const review = document.getElementById('review').value.trim();
-
-        // Validate input
-        if (!name || !email || !review) {
-            console.error('All fields are required.');
-            return;
-        }
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const review = document.getElementById('review').value;
 
         const newReview = {
             name,
@@ -215,19 +220,18 @@
             })
             .then(data => {
                 console.log('Review submitted successfully:', data);
-
+                
                 // Add the new review to the list
                 const reviewList = document.getElementById('review-list');
                 const newReviewElement = document.createElement('div');
                 newReviewElement.innerHTML = `<strong>${name}:</strong> ${review}`;
                 reviewList.appendChild(newReviewElement);
                 
-                // Clear the "No reviews available" message if it exists
-                const noReviewsMessage = document.querySelector('.no-reviews');
-                noReviewsMessage.style.display = 'none';
-
                 // Clear the form
                 reviewForm.reset();
+
+                // Hide the no reviews message if it was displayed
+                document.getElementById('no-reviews-message').style.display = 'none';
             })
             .catch(err => console.error('Error submitting review:', err));
     };
