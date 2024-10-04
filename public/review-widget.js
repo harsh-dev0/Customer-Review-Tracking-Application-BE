@@ -1,4 +1,4 @@
-(function() {
+(function () {
     // Default configurations
     const defaultConfig = {
         bubbleColor: '#007BFF',
@@ -25,11 +25,11 @@
     // Create style element for CSS
     const style = document.createElement('style');
     style.textContent = `
-        body {
+        #review-widget {
             font-family: Arial, sans-serif;
         }
-        
-        #review-bubble {
+
+        #review-widget #review-bubble {
             position: fixed;
             bottom: ${config.position.bottom};
             right: ${config.position.right};
@@ -47,7 +47,7 @@
             z-index: 1000;
         }
 
-        #review-popup {
+        #review-widget #review-popup {
             display: none; /* Hidden by default */
             position: fixed;
             bottom: calc(${config.position.bottom} + ${config.bubbleSize});
@@ -61,14 +61,14 @@
             border: 1px solid ${config.popupBorderColor};
         }
 
-        #review-popup h3 {
+        #review-widget #review-popup h3 {
             margin: 0;
             margin-bottom: 10px;
             font-size: 18px;
             color: ${config.popupTextColor};
         }
 
-        #review-list {
+        #review-widget #review-list {
             max-height: 150px;
             overflow-y: auto;
             margin-bottom: 10px;
@@ -76,8 +76,8 @@
             padding-bottom: 10px;
         }
 
-        input,
-        textarea {
+        #review-widget input,
+        #review-widget textarea {
             width: 100%;
             margin-bottom: 10px;
             padding: 8px;
@@ -86,7 +86,7 @@
             font-size: 14px;
         }
 
-        button {
+        #review-widget button {
             width: 100%;
             padding: 10px;
             background-color: ${config.bubbleColor};
@@ -96,18 +96,24 @@
             cursor: pointer;
         }
 
-        button:hover {
+        #review-widget button:hover {
             background-color: #0056b3;
         }
     `;
     document.head.appendChild(style);
 
-    // Create the review bubble and popup
+    // Create the review widget container
+    const widgetContainer = document.createElement('div');
+    widgetContainer.id = 'review-widget';
+    document.body.appendChild(widgetContainer);
+
+    // Create the review bubble
     const bubble = document.createElement('div');
     bubble.id = 'review-bubble';
     bubble.innerHTML = '💬';
-    document.body.appendChild(bubble);
+    widgetContainer.appendChild(bubble);
 
+    // Create the review popup
     const popup = document.createElement('div');
     popup.id = 'review-popup';
     popup.innerHTML = `
@@ -120,7 +126,7 @@
             <button type="submit">${config.submitButtonText}</button>
         </form>
     `;
-    document.body.appendChild(popup);
+    widgetContainer.appendChild(popup);
 
     // Function to toggle the visibility of the review popup
     bubble.addEventListener('click', () => {
