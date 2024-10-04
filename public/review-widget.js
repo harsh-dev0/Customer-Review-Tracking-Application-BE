@@ -1,4 +1,4 @@
-(function () {
+(function() {
     // Default configurations
     const defaultConfig = {
         bubbleColor: '#007BFF',
@@ -25,11 +25,11 @@
     // Create style element for CSS
     const style = document.createElement('style');
     style.textContent = `
-        #review-widget {
+        body {
             font-family: Arial, sans-serif;
         }
 
-        #review-widget #review-bubble {
+        #review-bubble {
             position: fixed;
             bottom: ${config.position.bottom};
             right: ${config.position.right};
@@ -47,7 +47,7 @@
             z-index: 1000;
         }
 
-        #review-widget #review-popup {
+        #review-popup {
             display: none; /* Hidden by default */
             position: fixed;
             bottom: calc(${config.position.bottom} + ${config.bubbleSize});
@@ -61,14 +61,14 @@
             border: 1px solid ${config.popupBorderColor};
         }
 
-        #review-widget #review-popup h3 {
+        #review-popup h3 {
             margin: 0;
             margin-bottom: 10px;
             font-size: 18px;
             color: ${config.popupTextColor};
         }
 
-        #review-widget #review-list {
+        #review-list {
             max-height: 150px;
             overflow-y: auto;
             margin-bottom: 10px;
@@ -76,8 +76,8 @@
             padding-bottom: 10px;
         }
 
-        #review-widget input,
-        #review-widget textarea {
+        input,
+        textarea {
             width: 100%;
             margin-bottom: 10px;
             padding: 8px;
@@ -86,7 +86,7 @@
             font-size: 14px;
         }
 
-        #review-widget button {
+        button {
             width: 100%;
             padding: 10px;
             background-color: ${config.bubbleColor};
@@ -96,24 +96,24 @@
             cursor: pointer;
         }
 
-        #review-widget button:hover {
+        button:hover {
             background-color: #0056b3;
+        }
+
+        
+        .no-reviews {
+            color: ${config.popupTextColor}; /* Ensure visibility */
+            text-align: center;
         }
     `;
     document.head.appendChild(style);
 
-    // Create the review widget container
-    const widgetContainer = document.createElement('div');
-    widgetContainer.id = 'review-widget';
-    document.body.appendChild(widgetContainer);
-
-    // Create the review bubble
+    // Create the review bubble and popup
     const bubble = document.createElement('div');
     bubble.id = 'review-bubble';
     bubble.innerHTML = '💬';
-    widgetContainer.appendChild(bubble);
+    document.body.appendChild(bubble);
 
-    // Create the review popup
     const popup = document.createElement('div');
     popup.id = 'review-popup';
     popup.innerHTML = `
@@ -125,8 +125,9 @@
             <textarea id="review" rows="4" placeholder="Write your review..." required></textarea>
             <button type="submit">${config.submitButtonText}</button>
         </form>
+        <p class="no-reviews" style="display: none;">${config.noReviewsText}</p>
     `;
-    widgetContainer.appendChild(popup);
+    document.body.appendChild(popup);
 
     // Function to toggle the visibility of the review popup
     bubble.addEventListener('click', () => {
@@ -151,12 +152,14 @@
     // Function to display fetched reviews
     function displayReviews(reviews) {
         const reviewList = document.getElementById('review-list');
-        reviewList.innerHTML = '';
-
+        reviewList.innerHTML = ''; // Clear previous reviews
+        const noReviewsMessage = document.querySelector('.no-reviews');
+        
         if (reviews.length === 0) {
-            reviewList.innerHTML = `<p style="color: ${config.popupTextColor};">${config.noReviewsText}</p>`;
-
+            noReviewsMessage.style.display = 'block'; // Show "No reviews available."
             return;
+        } else {
+            noReviewsMessage.style.display = 'none'; // Hide if reviews are available
         }
 
         reviews.forEach(({ name, review }) => {
@@ -175,11 +178,17 @@
     // Handle form submission
     const reviewForm = document.getElementById('review-form');
     reviewForm.onsubmit = (e) => {
-        e.preventDefault(); // Prevent form from refreshing the page
+        e.preventDefault();
 
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const review = document.getElementById('review').value;
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const review = document.getElementById('review').value.trim();
+
+        // Validate input
+        if (!name || !email || !review) {
+            console.error('All fields are required.');
+            return;
+        }
 
         const newReview = {
             name,
@@ -206,13 +215,17 @@
             })
             .then(data => {
                 console.log('Review submitted successfully:', data);
-                
+
                 // Add the new review to the list
                 const reviewList = document.getElementById('review-list');
                 const newReviewElement = document.createElement('div');
                 newReviewElement.innerHTML = `<strong>${name}:</strong> ${review}`;
                 reviewList.appendChild(newReviewElement);
                 
+                // Clear the "No reviews available" message if it exists
+                const noReviewsMessage = document.querySelector('.no-reviews');
+                noReviewsMessage.style.display = 'none';
+
                 // Clear the form
                 reviewForm.reset();
             })
