@@ -95,10 +95,11 @@
             color: #000000; /* Make input text black */
         }
 
-        button {
+        /* Button styles with increased specificity */
+        #review-popup button.custom-submit-button {
             width: 100%;
             padding: 10px;
-            background-color: ${config.bubbleColor} !important; /* Button color based on bubble color */
+            background-color: ${config.bubbleColor}; /* Button color based on bubble color */
             color: white;
             border: none;
             border-radius: 4px;
@@ -106,12 +107,12 @@
             transition: background-color 0.3s; /* Smooth transition for background color */
         }
 
-        button:hover {
+        #review-popup button.custom-submit-button:hover {
             background-color: #0056b3; /* Darker shade on hover */
         }
 
         #no-reviews-message {
-            font: 'bold';
+            font: bold;
             margin-top: 10px;
             color: ${config.popupTextColor}; /* Use black for better visibility */
             text-align: center; /* Center the text */
@@ -135,7 +136,7 @@
             <input type="text" id="name" placeholder="Your name" required>
             <input type="email" id="email" placeholder="Your email" required>
             <textarea id="review" rows="4" placeholder="Write your review..." required></textarea>
-            <button type="submit">${config.submitButtonText}</button>
+            <button class="custom-submit-button" type="submit">${config.submitButtonText}</button>
         </form>
     `;
     document.body.appendChild(popup);
