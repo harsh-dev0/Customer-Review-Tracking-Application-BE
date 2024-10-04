@@ -154,7 +154,8 @@
         reviewList.innerHTML = '';
 
         if (reviews.length === 0) {
-            reviewList.innerHTML = `<p>${config.noReviewsText}</p>`;
+            reviewList.innerHTML = `<p style="color: ${config.popupTextColor};">${config.noReviewsText}</p>`;
+
             return;
         }
 
