@@ -145,7 +145,12 @@
     bubble.addEventListener('click', () => {
         popup.style.display = (popup.style.display === 'none' || popup.style.display === '') ? 'block' : 'none';
     });
-
+    window.addEventListener('click', (event) => {
+        // Check if the click target is not the popup or the bubble
+        if (!bubble.contains(event.target) && !popup.contains(event.target)) {
+           popup.style.display = 'none';
+        }
+    });
     // Function to fetch five random reviews from the backend without authentication
     function fetchRandomReviews(site) {
         fetch(`https://customer-review-tracking-application-be.onrender.com/random-reviews?site=${encodeURIComponent(site)}`)
